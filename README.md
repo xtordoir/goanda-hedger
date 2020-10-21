@@ -51,7 +51,7 @@ curl -data '{"Size": -10000}' localhost:8080/hedge/static
 `POST` a dynamic Hedge for 1,000 EUR_USD position leaps at 0.1% price steps:
 
 ```
-curl -data '{"Size0": 1000, "Scale": 0.1}' localhost:8080/hedge/dymanic
+curl -data '{"Size0": 1000, "Scale": 0.1}' localhost:8080/hedge/dynamic
 ```
 
 ### Save the state of the Hedges Inventory for backup:
