@@ -80,13 +80,13 @@ func (hedge *DynamicHedge) PositionSize(price float64) int64 {
 		hedge.LengthDown += hedge.BoxDown - bi + 1
 		hedge.BoxUp = bi + 2
 		hedge.BoxDown = bi - 1
-		hedge.Size = -hedge.Size0 * i
+		hedge.Size = hedge.Size0 * i
 
 	} else if bi >= hedge.BoxUp {
 		hedge.LengthUp += bi + 1 - hedge.BoxUp
 		hedge.BoxUp = bi + 1
 		hedge.BoxDown = bi - 2
-		hedge.Size = -hedge.Size0 * i
+		hedge.Size = hedge.Size0 * i
 	}
 
 	return hedge.Size
