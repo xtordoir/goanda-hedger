@@ -126,10 +126,18 @@ func runHeartbeats(hChan chan models.PricingHeartbeat) {
 // async function to comnpute positions
 func runPositions(manager Tradeable,
 	priceChan chan models.Tick, positionChan chan instrumentPosition) {
+	i := 0
 	for {
 		price := <-priceChan
+		// check if there is a position change in the Inventory state
+		currentPosition := manager.GetSize()
 		position := instrumentPosition{price.Instrument, manager.PositionSize(price.Price())}
-		positionChan <- position
+
+		// force a check on the portfolio every 20 ticks...
+		if currentPosition != position.Position || i%20 == 0 {
+			positionChan <- position
+		}
+		i = i + 1
 	}
 }
 
@@ -156,16 +164,21 @@ func runOrders(api *api.API, positionChan chan instrumentPosition) {
 
 func main() {
 
+	// parse options
 	var statefile string
 	flag.StringVar(&statefile, "statefile", "", "state of hedges to initiate portfolio")
 
 	flag.Parse()
 
+	// create the core in-memeory data: inventory of Hedges
 	_inventory := make(Inventory, 0)
 	inv := &InventoryManager{Inventory: &_inventory}
+
+	// Create the Manageable view for the inventory
 	var manager Manageable
 	manager = inv
 
+	// optionally fill in the Inventory with a provided state file
 	if statefile != "" {
 		s, err := os.Open(statefile)
 		hedges := parseState(s)
@@ -178,8 +191,6 @@ func main() {
 			manager.AddHedge(h)
 		}
 	}
-
-	// Active the broker Client to Run orders as required
 
 	// the oanda API
 	ctx := api.Context{
@@ -198,17 +209,23 @@ func main() {
 	tickChan := make(chan models.Tick)
 	hChan := make(chan models.PricingHeartbeat)
 
+	// start the sink for Heartbeats
 	go runHeartbeats(hChan)
 
+	// start the collection of Ticks
 	go stream.TickStream([]string{"EUR_USD"}, tickChan, hChan)
+
 	// start the orders loop
 	go runOrders(&oanda, positionChan)
 
+	// create the Tradable view of the Inventory
 	var trader Tradeable
 	trader = inv
 
+	// start the positions computations with Tick stream channel
 	go runPositions(trader, tickChan, positionChan)
 
+	// Web server to manage Inventory
 	app := inventoryApp{manager}
 
 	mux := http.NewServeMux()

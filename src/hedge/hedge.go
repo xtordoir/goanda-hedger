@@ -72,7 +72,7 @@ func (hedge *DynamicHedge) PositionSize(price float64) int64 {
 	}
 
 	//target := int64(float64(hedge.Size0) * (price/hedge.Price0 - 1.0) / hedge.Scale)
-	i := hedge.nextI(price)
+	//i := hedge.nextI(price)
 	bi := hedge.nextBox(price)
 
 	// price went out of boundaries, we adapt position and box bounds
@@ -80,13 +80,13 @@ func (hedge *DynamicHedge) PositionSize(price float64) int64 {
 		hedge.LengthDown += hedge.BoxDown - bi + 1
 		hedge.BoxUp = bi + 2
 		hedge.BoxDown = bi - 1
-		hedge.Size = hedge.Size0 * i
+		hedge.Size = -hedge.Size0 * (hedge.BoxUp - 1) //i
 
 	} else if bi >= hedge.BoxUp {
 		hedge.LengthUp += bi + 1 - hedge.BoxUp
 		hedge.BoxUp = bi + 1
 		hedge.BoxDown = bi - 2
-		hedge.Size = hedge.Size0 * i
+		hedge.Size = -hedge.Size0 * (hedge.BoxUp - 1) //i
 	}
 
 	return hedge.Size

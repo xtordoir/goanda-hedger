@@ -2,3 +2,9 @@ github.com/xtordoir/goanda v0.0.0-20201021163408-d7f95f30de07 h1:P1zM+As9bfP0tUT
 github.com/xtordoir/goanda v0.0.0-20201021163408-d7f95f30de07/go.mod h1:9nhvkKi5oX7XpviFrGayRvReZSzq7c49RtRIuRyy4jo=
 github.com/xtordoir/goanda v0.0.0-20201021165751-bd3818e8fb44 h1:fVBrl4aU8JoaV/tucr8x0S4CiGfu7/DVO9owwN2IzVw=
 github.com/xtordoir/goanda v0.0.0-20201021165751-bd3818e8fb44/go.mod h1:9nhvkKi5oX7XpviFrGayRvReZSzq7c49RtRIuRyy4jo=
+github.com/xtordoir/goanda v0.0.0-20201021211639-369b577997b2 h1:0LVPxXc295mClfFftqKGhnnibwgb22DSWTzlGCnG2wg=
+github.com/xtordoir/goanda v0.0.0-20201021211639-369b577997b2/go.mod h1:9nhvkKi5oX7XpviFrGayRvReZSzq7c49RtRIuRyy4jo=
+github.com/xtordoir/goanda v0.0.0-20201022071626-03173099b0d5 h1:kgqrACyLvwcGPatDADS6J3iPcoooeoxxyA6697OSGCs=
+github.com/xtordoir/goanda v0.0.0-20201022071626-03173099b0d5/go.mod h1:9nhvkKi5oX7XpviFrGayRvReZSzq7c49RtRIuRyy4jo=
+github.com/xtordoir/goanda v0.0.0-20201022082521-208bbe6ad316 h1:pnl2ZYvSCtg8EQVj8Nt+jDTWv5ZagIh1YuDNmLUkU9I=
+github.com/xtordoir/goanda v0.0.0-20201022082521-208bbe6ad316/go.mod h1:9nhvkKi5oX7XpviFrGayRvReZSzq7c49RtRIuRyy4jo=
