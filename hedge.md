@@ -1,6 +1,6 @@
 # Hedging Strategies and Management
 
-An Hedge is a strategy to protect against Forex risk. Static hedges have for purpose to exactly counter balance the forex risk on another contract. Dynamic Hedges have for purpose to look to yield some profit, allowing a certain level of loss.
+An Hedge is a strategy to protect against Forex risk. Static hedges have for purpose to exactly counter balance the forex risk on another contract. Dynamic Hedges have for purpose to yield some profit, allowing for a certain level of loss.
 
 ## Static Hedge
 
@@ -26,7 +26,7 @@ curl -data '{"Size": -10000}' localhost:8080/hedge/static
 
 ## Dynamic Hedge
 
-A Dynamic Hedge is a position variable in size with price fluctuations.
+A Dynamic Hedge is a position variable in size as price fluctuates.
 
 ### Initialisation Parameters:
 
@@ -46,39 +46,42 @@ On the first tick, the dynamic hedge is initialised:
 Imagine the initialisation price is 1.0000, **Price0** is set at 1.0000. Price boxes are defined and numbered as show in the figure below:
 
 ![](img/box0.png)
-*Boxes with price thresholds and corresponding order.*
+*Boxes with price thresholds and corresponding trades.*
 
 
 The Size of the hedge remains 0 for any price fluctuation within Box # -1 and Box # 0 (0.9975 - 1.0025 price range).
 
 The ***BoxUp*** parameter is set at 1, and corresponds to the price range 1.0025 - 1.0050.
 
-The ***BoxDown*** parameter is set at -2, and corresponds to the price range 0.9975 - 0.9950.
+The ***BoxDown*** parameter is set at -2, and corresponds to the price range 0.9950 - 0.9975.
 
 ### The dynamic process
 
-The dynamic trading occurs when the price hits the ***BoxUp*** or ***BoxDown***.
+Trading occurs when the price hits the ***BoxUp*** or ***BoxDown***.
 
 
 In the example below, the price rises above 1.0025, entering ***BoxUp***. The system will do the following:
 
 - Sell 2000 Units
 - Rise ***BoxUp*** to number 2, ( 1.0050 - 1.0075 range)
-- Rise ***BoxDown*** to number 0 (1.0000 - 1.0025 range)
+- Rise ***BoxDown*** to number -1 (0.9975 - 1.0000 range)
 
 
 This is illustrated in the following figure:
 
 ![](img/box1.png)
-*Price touched BoxUp, 2000 units are sold, and boundary boxes are raised.*
+*Price touched BoxUp, 2000 units are sold at 1.0025 (red triangle), and boundary boxes are raised.*
 
-And the process is repeated, selling 2000 when ***BoxUp*** is hit, rising ***BoxUp*** and ***BoxDown***. And conversely buying 2000 when ***BoxDown*** is hit, lowering ***BoxUp*** and ***BoxDown***.
+And the process is repeated, selling 2000 when ***BoxUp*** is hit, rising ***BoxUp*** and ***BoxDown***. And conversely buying 2000 when ***BoxDown*** is hit, lowering ***BoxUp*** and ***BoxDown***. This process entails a buy ***Scale*** percent lower than a sale, each time a box moving down compensates a box moving up (no matter the order of these 2 events).
+
+![](img/box2.png)
+*Two further steps down, 2000 units are bought at 1.0000 and then at 0.9975 (green triangle), and boundary boxes are lowered.*
 
 Two parameters are used to count the number of steps up and down (***LengthUp*** and ***LengthDown***).
 
 ### Risk-Reward of the dynamic process
 
-As price drifts away from ***Price0***, the size of the position will grow, and unrealised losses as well. In order to clearly understand the risk profile, consider the following:
+As price drifts away from ***Price0***, the size of the position will grow, and running losses are accumulating as well. In order to clearly understand the risk profile, consider the following:
 
 #### Risk
 
@@ -88,27 +91,27 @@ If **N** = ***LengthUp*** - ***LengthDown*** is the number of boxes moves away f
 
 (positive for a price movement down and negative for a price movement up)
 
-The accumulated unrealised PL is:
+The accumulated Loss is:
 
-***PL*** = -(***N*** * ***N*** + ***N***)/2  ***Size0*** * ***Scale*** / 100
+***Loss(N)*** = -(***N*** * ***N*** + ***N***)/2  ***Size0*** * ***Scale*** / 100
 
 In the example above, if ***N*** = 10 (2.5% price change):
 
 ***Size*** = ***-10,000 Units***
 
-***PL*** = (100 + 10) / 2 * 2000 * 0.25 / 100 = ***-275 Units***
+***Loss*** = (100 + 10) / 2 * 2000 * 0.25 / 100 = ***-275 Units***
 
 #### Reward
 
-Each time a move up is compensated with a move down (no matter the order), a small profit is generated equals to ***Size0*** * ***Scale*** / 100.
+Each time a move up is compensated with a move down (no matter the order), a small profit is generated equal to ***Size0*** * ***Scale*** / 100.
 
 The number of such box move reversal is:
 
 ***Np*** = max(***LengthUp***, ***LengthDown***) - abs(***LengthUp*** - ***LengthDown***)
 
-And the realised profit is:
+And the profit is:
 
-***Np*** * ***Size0*** * ***Scale*** / 100
+***Profit(Np)*** = ***Np*** * ***Size0*** * ***Scale*** / 100
 
 In the previous example, if ***LengthUp*** = 20 and ***LengthDown*** = 10:
 
@@ -116,12 +119,12 @@ In the previous example, if ***LengthUp*** = 20 and ***LengthDown*** = 10:
 
 and the profit is: 10 * 2000 * 0.25 / 100 = 50 Units
 
-We see that more fluctuations or a deeper reversal is required to get an overall profit.
+We see that more fluctuations (***Np*** increasing) or a deeper reversal (***N*** decreasing) is required to get an overall profit.
 
-The rationale is that over the long run, ***N*** grows slower than ***Np***, thus if the ***Size0*** and ***Scale*** parameter combination is well chosen to avoid excessive risk (and margin calls), the strategy will ultimately be profitable.
+The rationale is that over the long run, ***N*** grows more slowly than ***Np***, thus if the ***Size0*** and ***Scale*** parameter combination is well chosen to avoid excessive risk (and margin calls), the strategy will ultimately be profitable.
 
 ## Removing Hedges
 
 There is no ID for Hedges in the Inventory, and no endpoint to remove Hedges.
 
-The procedure is to save the Inventory in a file, and edit to remove the hedges to decommission, then stop and restart the server with the new inventory state.
+The procedure is to save the Inventory in a file, and edit to remove the hedges to decommission, then stop and restart the server with the new inventory state. See the README file for a description of this process.
