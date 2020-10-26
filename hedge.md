@@ -107,7 +107,7 @@ Each time a move up is compensated with a move down (no matter the order), a sma
 
 The number of such box move reversal is:
 
-***Np*** = max(***LengthUp***, ***LengthDown***) - abs(***LengthUp*** - ***LengthDown***)
+***Np*** = min(***LengthUp***, ***LengthDown***)
 
 And the profit is:
 
